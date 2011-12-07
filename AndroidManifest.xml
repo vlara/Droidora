@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.vlara.droidora"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk android:minSdkVersion="8" />
+	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name" >
+        <activity
+            android:label="@string/app_name"
+            android:name="PandoidPlayer"
+            android:clearTaskOnLaunch="true" 
+            android:theme="@android:style/Theme.NoTitleBar" >
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+         <activity android:name="PandoidStationSelect" android:noHistory="true"></activity>
+        <activity android:name="PandoidSettings" android:noHistory="true"></activity>
+        <service android:name="PandoraRadioService" android:enabled="true" android:exported="false"></service>
+        <activity android:name="PandoidLogin" android:noHistory="true"></activity>
+    </application>
+
+</manifest>

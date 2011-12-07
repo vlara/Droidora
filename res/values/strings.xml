@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DOOM Box</string>
+    <string name="signing_in">Signing in. Please wait...</string>
+    <string name="signin_failed">Sign-in failed</string>
+    <string name="loading">Loading %s...</string>
+    <string name="baned_song">ARG...</string>
+    <string name="loved_song">Rock on!</string>
+    <string name="no_song">No song currently playing...</string>
+    <string name="next_song">Loading next song...</string>
+</resources>
