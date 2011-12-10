@@ -62,7 +62,7 @@ public class PandoraRadioService extends Service {
 	private Song[] currentPlaylist;
 	private Song[] nextPlaylist;
 	private int currentSongIndex;
-	public static final String SONG_CHANGE = "com.aregner.android.pandoid.PanoraRadioService.SONG_CHANGE";
+	public static final String SONG_CHANGE = "com.vlara.PanoraRadioService.SONG_CHANGE";
 	
 	protected PandoraDB db;
 	
@@ -158,13 +158,13 @@ public class PandoraRadioService extends Service {
 	}
 	
 	public void setNotification() {
-		Notification notification = new Notification(R.drawable.icon, "Pandora Radio", System.currentTimeMillis());
-		Intent notificationIntent = new Intent(this, PandoidPlayer.class);
+		Notification notification = new Notification(R.drawable.icon, "Droidora", System.currentTimeMillis());
+		Intent notificationIntent = new Intent(this, DroidoraPlayer.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, NOTIFICATION_SONG_PLAYING, notificationIntent, 0);
 		
 		notification.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_FOREGROUND_SERVICE;
 		notification.setLatestEventInfo(getApplicationContext(), "Pandora Radio", "Playing "+getCurrentSong().getTitle(), contentIntent);
-		//notificationManager.notify(NOTIFICATION_SONG_PLAYING, notification);
+		notificationManager.notify(NOTIFICATION_SONG_PLAYING, notification);
 		startForeground(NOTIFICATION_SONG_PLAYING, notification);
 	}
 
@@ -332,12 +332,12 @@ public class PandoraRadioService extends Service {
 		}
 	}
 	public void rate(String rating) {
-		if(rating == PandoidPlayer.RATING_NONE) {
+		if(rating == DroidoraPlayer.RATING_NONE) {
 			// cannot set rating to none
 			return;
 		}
 		
-		boolean ratingBool = rating.equals(PandoidPlayer.RATING_LOVE) ? true : false;
+		boolean ratingBool = rating.equals(DroidoraPlayer.RATING_LOVE) ? true : false;
 		
 		pandora.rate(currentStation, currentPlaylist[currentSongIndex], ratingBool);
 	}

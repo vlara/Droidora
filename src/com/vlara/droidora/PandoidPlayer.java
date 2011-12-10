@@ -137,8 +137,8 @@ public class PandoidPlayer extends Activity {
 		if(!initialLogin){
 			serviceSetup();
 		}
-		
 		updateForNewSong();
+		
 	}
 	
 	private void serviceSetup() {
@@ -216,10 +216,10 @@ public class PandoidPlayer extends Activity {
 			Log.i(LOG_TAG, "PandoraLogin.class returned ok...");
  			serviceSetup();
  		}
-		/**else if(requestCode == REQUIRE_LOGIN_CREDS && resultCode != RESULT_OK ) {
+		else if(requestCode == REQUIRE_LOGIN_CREDS && resultCode != RESULT_OK ) {
 		Log.i(LOG_TAG, "PandoidLogin.class returned with bad result. finishing activity");
-		finish();
-		}*/
+		//finish();
+		}
 		/*else if(requestCode == REQUIRE_LOGIN_CREDS && resultCode == RESULT_OK) {
 			serviceSetup();
 		}*/
@@ -331,10 +331,12 @@ public class PandoidPlayer extends Activity {
 			try {
 				Log.i(SETUP_TAG, "Attempting to sign in using prefs credentials...");
 				pandora.signIn(username, password);
+				
 			} catch(Exception ex) {
 				Log.e(SETUP_TAG, "Failed to sign in...", ex);
 				ex.printStackTrace();
 			}
+
 			return pandora.isAlive();
 		}
 
@@ -347,6 +349,7 @@ public class PandoidPlayer extends Activity {
 
 			if(result.booleanValue() && result) {
 				Log.i(SETUP_TAG, "Sign in success...");
+				initialLogin = true;
 				if(!pandora.isPlaying()) {
 
 					if(pandora.isPlayable()) {

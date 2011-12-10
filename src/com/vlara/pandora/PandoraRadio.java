@@ -36,6 +36,8 @@ import java.util.Arrays;
 
 import org.xmlrpc.android.XMLRPCException;
 
+import android.util.Log;
+
 
 public class PandoraRadio {
 
@@ -213,9 +215,10 @@ public class PandoraRadio {
 			result = xmlrpc.callWithBody(url.toString(), data);
 		} catch (XMLRPCException e) {
 			// TODO Auto-generated catch block
+			Log.i("XMLrpc", "exception caught this is where you return false");
 			e.printStackTrace();
 		}
-
+		Log.e("xmlrpcCall", "Returning Result");
 		return result;
 	}
 	Object xmlrpcCall(String method, ArrayList<Object> args) {
@@ -314,7 +317,11 @@ public class PandoraRadio {
 	}
 	
 	public boolean isAlive() {
-		return authToken != null;
+		if (authToken != null)
+			Log.d("auth", authToken);
+		else
+			Log.d("auth", "authToken is null");
+		return (authToken != null);
 	}
 
 }
