@@ -18,6 +18,7 @@
 package com.vlara.pandora;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
@@ -53,6 +54,8 @@ import org.xmlrpc.android.Tag;
 import org.xmlrpc.android.XMLRPCException;
 import org.xmlrpc.android.XMLRPCFault;
 
+import android.util.Log;
+
 public class XmlRpc extends org.xmlrpc.android.XMLRPCClient {
 
 	public XmlRpc(String url) {
@@ -73,11 +76,10 @@ public class XmlRpc extends org.xmlrpc.android.XMLRPCClient {
 			//Log.d(Tag.LOG, "ros HTTP POST");
 			// execute HTTP POST request
 			HttpResponse response = client.execute(postMethod);
-			//Log.d(Tag.LOG, "ros HTTP POSTed");
-
+			Log.d("http", "ros HTTP POSTed");
 			// check status code
 			int statusCode = response.getStatusLine().getStatusCode();
-			//Log.d(Tag.LOG, "ros status code:" + statusCode);
+			Log.d("http", "ros status code:" + statusCode);
 			if (statusCode != HttpStatus.SC_OK) {
 				throw new XMLRPCException("HTTP status code: " + statusCode + " != " + HttpStatus.SC_OK);
 			}
@@ -88,17 +90,18 @@ public class XmlRpc extends org.xmlrpc.android.XMLRPCClient {
 			XmlPullParser pullParser = XmlPullParserFactory.newInstance().newPullParser();
 			entity = response.getEntity();
 			Reader reader = new InputStreamReader(new BufferedInputStream(entity.getContent()));
+	
 			// for testing purposes only
 			// reader = new StringReader("<?xml version='1.0'?><methodResponse><params><param><value>\n\n\n</value></param></params></methodResponse>");
 			pullParser.setInput(reader);
-
+			
 			// lets start pulling...
 			pullParser.nextTag();
 			pullParser.require(XmlPullParser.START_TAG, null, Tag.METHOD_RESPONSE);
-
 			pullParser.nextTag(); // either Tag.PARAMS (<params>) or Tag.FAULT (<fault>)  
 			String tag = pullParser.getName();
 			if (tag.equals(Tag.PARAMS)) {
+				Log.d("time", "returning params");
 				// normal response
 				pullParser.nextTag(); // Tag.PARAM (<param>)
 				pullParser.require(XmlPullParser.START_TAG, null, Tag.PARAM);

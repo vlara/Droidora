@@ -68,7 +68,7 @@ public class Song {
 			message = "";
 			startTime = null;
 			finished = false;
-			playlistTime = System.currentTimeMillis() / 1000L;
+			playlistTime = (System.currentTimeMillis() - pandora.offset);
 		} catch(RuntimeException ex) {
 			ex.printStackTrace();
 			return;
@@ -76,7 +76,8 @@ public class Song {
 	}
 	
 	public boolean isStillValid() {
-		return ((System.currentTimeMillis() / 1000L) - playlistTime) < PandoraRadio.PLAYLIST_VALIDITY_TIME;
+		return true;
+		//return ((System.currentTimeMillis()) - playlistTime) < PandoraRadio.PLAYLIST_VALIDITY_TIME;
 	}
 	public String getTrackToken(){
 		return trackToken;

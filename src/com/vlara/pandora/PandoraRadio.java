@@ -43,7 +43,7 @@ public class PandoraRadio {
 
 	public static final String PROTOCOL_VERSION = "33";
 	private static final String RPC_URL = "https://www.pandora.com/radio/xmlrpc/v"+PROTOCOL_VERSION+"?";
-	private static final String USER_AGENT = "com.magicbos.doombox";
+	private static final String USER_AGENT = "com.vlara.Droidora";
 
 	public static final long PLAYLIST_VALIDITY_TIME = 3600 * 3;
 	public static final String DEFAULT_AUDIO_FORMAT = "aacplus";
@@ -58,6 +58,7 @@ public class PandoraRadio {
 	private String lid;
 	private String webAuthToken;
 	private ArrayList<Station> stations;
+	public long offset;
 
 	public PandoraRadio() {
 		xmlrpc = new XmlRpc(RPC_URL);
@@ -169,22 +170,22 @@ public class PandoraRadio {
 		return formatUrlArg(v.iterator());
 	}
 
-	/*public static void printXmlRpc(String xml) {
+	public static void printXmlRpc(String xml) {
 		xml = xml.replace("<param>", "\n\t<param>").replace("</params>", "\n</params>");
 		System.err.println(xml);
-	}*/
+	}
 	
-	//@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	private Object xmlrpcCall(String method, ArrayList<Object> args, ArrayList<Object> urlArgs) {
 		if(urlArgs == null)
 			urlArgs = (ArrayList<Object>) args.clone();
-
-		args.add(0, new Long(System.currentTimeMillis()/1000L));
+		if (method != "misc.sync")
+			args.add(0, new Long((System.currentTimeMillis() - offset)));
 		if(authToken != null)
 			args.add(1, authToken);
 
 		String xml = XmlRpc.makeCall(method, args);
-		//printXmlRpc(xml);
+		printXmlRpc(xml);
 		String data = pandoraEncrypt(xml);
 
 		ArrayList<String> urlArgStrings = new ArrayList<String>();
@@ -230,13 +231,12 @@ public class PandoraRadio {
 	}
 
 	public void connect(String user, String password) {
-		rid = String.format("%07dP", System.currentTimeMillis() % 1000L);
+		timesync();
+		rid = String.format("%07dP", System.currentTimeMillis());
 		authToken = null;
-
 		ArrayList<Object> args = new ArrayList<Object>(2);
 		args.add(user); args.add(password);
 		Object result = xmlrpcCall("listener.authenticateListener", args, EMPTY_ARGS);
-
 		if(result instanceof HashMap<?,?>) {
 			HashMap<String,Object> userInfo = (HashMap<String,Object>) result;
 
@@ -244,6 +244,25 @@ public class PandoraRadio {
 			authToken = (String) userInfo.get("authToken");
 			lid = (String )userInfo.get("listenerId");
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void timesync(){
+		Log.d("time","calling timesync");
+		rid = String.format("%s","method=sync");
+		Object result = xmlrpcCall("misc.sync");
+		Long timeWhenCalled = System.currentTimeMillis();
+		if (result instanceof String){
+			Log.d("time", "String ");
+			String test = pandoraDecrypt((String)result);
+			String time ="";
+			for (int i=0; i< test.length(); i++){
+				if (Character.isDigit(test.charAt(i)) ){
+					time = time + test.charAt(i);
+				}
+			}
+			offset = (timeWhenCalled - Long.parseLong(time));
+		}			
 	}
 	
 	public void disconnect() {

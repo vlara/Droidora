@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
+import android.util.Log;
+
 
 public class Station implements Comparable<Station>, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -60,6 +62,7 @@ public class Station implements Comparable<Station>, Serializable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public Song[] getPlaylist(String format) {
 		ArrayList<Object> args = new ArrayList<Object>(7);
 		args.add(id);
