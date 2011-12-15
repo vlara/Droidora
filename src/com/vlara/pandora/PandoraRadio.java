@@ -28,6 +28,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -58,7 +59,7 @@ public class PandoraRadio {
 	private String lid;
 	private String webAuthToken;
 	private ArrayList<Station> stations;
-	public long offset;
+	private long offset = 0L;
 
 	public PandoraRadio() {
 		xmlrpc = new XmlRpc(RPC_URL);
@@ -179,8 +180,12 @@ public class PandoraRadio {
 	private Object xmlrpcCall(String method, ArrayList<Object> args, ArrayList<Object> urlArgs) {
 		if(urlArgs == null)
 			urlArgs = (ArrayList<Object>) args.clone();
-		if (method != "misc.sync")
-			args.add(0, new Long((System.currentTimeMillis() - offset)));
+		if (method != "misc.sync"){
+			Log.d("time", "Not misc" + method);
+			args.add(0,  Long.valueOf(new Date().getTime() / 1000L + offset));
+		}
+			
+			
 		if(authToken != null)
 			args.add(1, authToken);
 
@@ -231,9 +236,11 @@ public class PandoraRadio {
 	}
 
 	public void connect(String user, String password) {
-		timesync();
-		rid = String.format("%07dP", System.currentTimeMillis());
+		
+		rid = String.format("%07dP", Long.valueOf(new Date().getTime() % 1000L));
 		authToken = null;
+		timesync();
+		Log.d("time"," " +  offset);
 		ArrayList<Object> args = new ArrayList<Object>(2);
 		args.add(user); args.add(password);
 		Object result = xmlrpcCall("listener.authenticateListener", args, EMPTY_ARGS);
@@ -246,22 +253,23 @@ public class PandoraRadio {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void timesync(){
 		Log.d("time","calling timesync");
 		rid = String.format("%s","method=sync");
 		Object result = xmlrpcCall("misc.sync");
-		Long timeWhenCalled = System.currentTimeMillis();
 		if (result instanceof String){
 			Log.d("time", "String ");
-			String test = pandoraDecrypt((String)result);
+			String decryptedResult = pandoraDecrypt((String)result);
 			String time ="";
-			for (int i=0; i< test.length(); i++){
-				if (Character.isDigit(test.charAt(i)) ){
-					time = time + test.charAt(i);
+			for (int i=0; i< decryptedResult.length(); i++){
+				if (i > 3){
+					if (Character.isDigit(decryptedResult.charAt(i)) ){
+						time = time + decryptedResult.charAt(i);
+					}
 				}
 			}
-			offset = (timeWhenCalled - Long.parseLong(time));
+			Log.d("time", "decrypted time: " + time);
+			offset = (Long.valueOf(time).longValue() -  System.currentTimeMillis() / 1000L);
 		}			
 	}
 	
@@ -277,6 +285,7 @@ public class PandoraRadio {
 
 	public ArrayList<Station> getStations() {
 		// get stations
+
 		Object result = xmlrpcCall("station.getStations");
 
 		if(result instanceof Object[]) {

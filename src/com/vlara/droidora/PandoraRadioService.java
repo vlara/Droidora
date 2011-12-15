@@ -41,6 +41,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 
 
@@ -218,7 +219,6 @@ public class PandoraRadioService extends Service {
 	}
 	public ArrayList<Station> getStations() {
 		ArrayList<Station> stations;
-
 		stations = pandora.getStations();
 		db = new PandoraDB(getBaseContext());
 		db.syncStations(stations);
@@ -237,7 +237,7 @@ public class PandoraRadioService extends Service {
 		return currentPlaylist[currentSongIndex];
 	}
 	public boolean isPlayable() {
-		return currentStation != null && pandora.isAlive();
+		return (currentStation != null && pandora.isAlive());
 	}
 	public boolean isPlaying() {
 		return media.isPlaying();
@@ -265,6 +265,7 @@ public class PandoraRadioService extends Service {
 		//media.setOnCompletionListener((OnCompletionListener)listeners.get(OnCompletionListener.class));
 		//media.setOnPreparedListener((OnPreparedListener)listeners.get(OnPreparedListener.class));
 		try {
+			Log.d("service", currentPlaylist[i].getAudioUrl());
 			media.setDataSource( currentPlaylist[i].getAudioUrl() );
 		} catch (IllegalArgumentException e1) {
 			// TODO Auto-generated catch block
@@ -272,7 +273,7 @@ public class PandoraRadioService extends Service {
 		} catch (IllegalStateException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		} catch (IOException e1) {
+		} catch (IOException e1) { 
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}

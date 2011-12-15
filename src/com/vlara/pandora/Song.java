@@ -68,7 +68,7 @@ public class Song {
 			message = "";
 			startTime = null;
 			finished = false;
-			playlistTime = (System.currentTimeMillis() - pandora.offset);
+			playlistTime = (System.currentTimeMillis() / 1000L);
 		} catch(RuntimeException ex) {
 			ex.printStackTrace();
 			return;
